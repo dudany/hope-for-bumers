@@ -26,7 +26,6 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-.idea
 *.iws
 workspace.xml
 tasks.xml
@@ -131,3 +130,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# custom ignores
+.DS_Store
+/datalake/
+/.idea/
