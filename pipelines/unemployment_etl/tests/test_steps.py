@@ -28,7 +28,7 @@ def test_ingestion(mock_requests_post):
     assert all([a == b for a, b in zip(actual, EXPECTED_RAW_DATA)])
 
 
-def test_mirror_create():
+def test_write_to_mirror_table():
     # test for mirror creation testing
 
     # setup of delta table

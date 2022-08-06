@@ -54,3 +54,4 @@ To run tests run the `pipelines/unemployment_etl/tests` dir, pytest will run the
 1. using infrastructure methodology to create db instead of applicative flow.
 2. more unit tests, e2e test
 3. scheduler better to be a abstraction to run specific pipelines for pipes to come currently running only one.
+4. do a query cli to test the data
