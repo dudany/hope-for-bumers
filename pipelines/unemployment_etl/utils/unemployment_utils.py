@@ -14,7 +14,7 @@ def set_logging():
     )
 
 
-def prepare_datalake_dirs():
+def prepare_datalake(spark:SparkSession):
     try:
         os.mkdir('./datalake')
     except FileExistsError as f:
@@ -24,14 +24,13 @@ def prepare_datalake_dirs():
     except FileExistsError as f:
         pass
     try:
-        os.mkdir('./datalake/mirror_table')
-    except FileExistsError as f:
-        pass
-    try:
         os.mkdir('./datalake/processed_data')
     except FileExistsError as f:
         pass
-
+    # running mirror table ddl
+    with open("./pipelines/unemployment_etl/create_mirror_table/mirror_table_ddl.sql") as f:
+        ddl = f.read()
+    spark.sql(ddl)
 
 def get_spark_session():
     spark = SparkSession \
