@@ -4,7 +4,8 @@ from mock import patch
 from pipelines.unemployment_etl.create_mirror_table.mirror_tables import create_mirror_table
 from pipelines.unemployment_etl.raw_data_ingestion.ingestion_dumper import ingest_raw_data
 from pipelines.unemployment_etl.tests.test_expected import EXPECTED_RAW_DATA
-from pipelines.unemployment_etl.utils.unemployment_utils import create_pipeline_spark_context, prepare_datalake
+from pipelines.unemployment_etl.utils.unemployment_utils import create_pipeline_spark_context, prepare_datalake, \
+    create_dir
 
 
 class mockedApiResponse:
@@ -14,6 +15,7 @@ class mockedApiResponse:
 @patch('pipelines.unemployment_etl.raw_data_ingestion.ingestion_dumper.requests.post')
 def test_ingestion(mock_requests_post):
     mock_requests_post.return_value = mockedApiResponse()
+    create_dir("test_raw_data_results")
     test_raw_data_path = f"{os.getcwd()}/test_raw_data_results"
     etl_date = {"startyear": "2019", "endyear": "2021"}
     series_id_list = ["LAUCT395688200000003", "LAUCT394713800000003", "LAUCT485235600000003",

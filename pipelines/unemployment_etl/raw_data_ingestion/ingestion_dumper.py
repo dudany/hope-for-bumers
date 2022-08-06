@@ -17,15 +17,15 @@ BUREAU_OF_LABOR_STATISTICS_API_HEADER = 'https://api.bls.gov/publicAPI/v2/timese
 class RequestNotProcessed(Exception):
     pass
 
+
 @retry(stop_max_attempt_number=3, wait_fixed=2000)  # retry api call
 def get_data_from_api(data: str) -> str:
     logging.info("Making API call to get labor statistics data")
     return requests.post(BUREAU_OF_LABOR_STATISTICS_API_HEADER, data=data, headers=headers).text
 
+
 def ingest_raw_data(raw_data_location: str, date_period: Dict[str, str], series_list: List[str]) -> str:
     """
-
-    
     :param spark: spark session created for pipeline
     :param raw_data_location: String of path for the raw data to land in
     :param date_period: Dictionary with keys `startyear` and `endyear` that representing the required date period
@@ -65,7 +65,7 @@ def ingest_raw_data(raw_data_location: str, date_period: Dict[str, str], series_
     # write the df to json lines file
     file_pattern = f"raw_data_{download_ts.strftime('%y_%m_%d_%H_%M_%S')}.json"
     file_path = os.path.join(raw_data_location, file_pattern)
-    total_series_df.to_json(file_path,orient='records', lines=True)
+    total_series_df.to_json(file_path, orient='records', lines=True)
 
     logging.info(f"Written files to: {raw_data_location}")
     logging.info("Finished data ingestion")

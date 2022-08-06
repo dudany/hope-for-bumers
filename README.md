@@ -16,6 +16,7 @@ DDL to create delta lake table (mirror_table).
 Later the raw data step is executed and mirror table creation after that(if specific flag are inserted steps can be skipped).
 
 ## preparation 
+create virtual env that you will be using for this project and then run.
 ```shell
 pip install -r requirements.txt
 ```
