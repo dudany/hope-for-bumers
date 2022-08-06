@@ -22,7 +22,7 @@ def move_files_to_processed(processed_files: List, raw_data_path: str, processed
         os.replace(os.path.join(raw_data_path, f), os.path.join(processed_data_path, f))
 
 
-def create_mirror_table(spark: SparkSession, raw_data_path: str, processed_data_path: str):
+def write_mirror_table(spark: SparkSession, raw_data_path: str, processed_data_path: str):
     # check if the raw data folder is not empty
     if not len(os.listdir(raw_data_path)):
         logging.warning("Raw data Directory is empty")

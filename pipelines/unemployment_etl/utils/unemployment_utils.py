@@ -17,7 +17,12 @@ def set_logging():
     )
 
 
-def create_dir(rel_path):
+def create_dir(rel_path: str) -> str:
+    """
+    Common function to create dirs
+    :param rel_path:
+    :return: abs path of dir
+    """
     abs_path = os.path.join(os.getcwd(), rel_path)
     try:
         os.mkdir(abs_path)

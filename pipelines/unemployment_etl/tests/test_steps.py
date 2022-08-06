@@ -1,7 +1,7 @@
 import os
 import shutil
 from mock import patch
-from pipelines.unemployment_etl.create_mirror_table.mirror_tables import create_mirror_table
+from pipelines.unemployment_etl.create_mirror_table.mirror_tables import write_mirror_table
 from pipelines.unemployment_etl.raw_data_ingestion.ingestion_dumper import ingest_raw_data
 from pipelines.unemployment_etl.tests.test_expected import EXPECTED_RAW_DATA
 from pipelines.unemployment_etl.utils.unemployment_utils import create_pipeline_spark_context, prepare_datalake, \
@@ -14,6 +14,7 @@ class mockedApiResponse:
 
 @patch('pipelines.unemployment_etl.raw_data_ingestion.ingestion_dumper.requests.post')
 def test_ingestion(mock_requests_post):
+    # test for testing ingestion step
     mock_requests_post.return_value = mockedApiResponse()
     create_dir("test_raw_data_results")
     test_raw_data_path = f"{os.getcwd()}/test_raw_data_results"
@@ -28,6 +29,8 @@ def test_ingestion(mock_requests_post):
 
 
 def test_mirror_create():
+    # test for mirror creation testing
+
     # setup of delta table
     spark = create_pipeline_spark_context()
     sql_path = "../create_mirror_table/mirror_table_ddl.sql"
@@ -36,11 +39,11 @@ def test_mirror_create():
     test_raw_data_to_process = paths_dict["raw_data"]
     shutil.copy("test_raw_data_to_process/raw_data_22_08_06_16_34_54.json", test_raw_data_to_process)
     test_processed_data_path = paths_dict["processed_data"]
-    create_mirror_table(spark, test_raw_data_to_process, test_processed_data_path)
+    write_mirror_table(spark, test_raw_data_to_process, test_processed_data_path)
 
     actual_df = spark.sql("select * from mirror_table")
     expected_df = spark.read.parquet("./test_mirror_table_expc")
-    assert (are_dataframes_equal(actual_df, expected_df), "Result is dfferent then expected")
+    assert (are_dataframes_equal(actual_df, expected_df), "Result is different then expected")
 
 
 def are_dataframes_equal(df_actual, df_expected):

@@ -2,7 +2,7 @@ import os
 from typing import Tuple
 import click as click
 import logging
-from pipelines.unemployment_etl.create_mirror_table.mirror_tables import create_mirror_table
+from pipelines.unemployment_etl.create_mirror_table.mirror_tables import write_mirror_table
 from pipelines.unemployment_etl.raw_data_ingestion.ingestion_dumper import ingest_raw_data
 from pipelines.unemployment_etl.utils.unemployment_utils import set_logging, prepare_datalake, \
     create_pipeline_spark_context, get_defaults
@@ -20,6 +20,7 @@ DEFAULT_DATES, DEFAULT_SERIES_ID = get_defaults(PATH_TO_CONFIG_FILE)
 @click.option("--skip_raw_data", is_flag=True, show_default=True, default=False, help="skip raw_data step")
 @click.option("--skip_mirror_table", is_flag=True, show_default=True, default=False, help="skip mirror_table step")
 def schedule_unemployment_pipeline(date_period: Tuple, series_id: str, skip_raw_data: bool, skip_mirror_table: bool):
+    # executes the pipeline steps , preparation, then ingestion and for last write into mirror table
     etl_date = {"startyear": date_period[0], "endyear": date_period[1]}
 
     if skip_mirror_table and skip_raw_data:
@@ -33,7 +34,7 @@ def schedule_unemployment_pipeline(date_period: Tuple, series_id: str, skip_raw_
         logging.info(f"Ingesting dates: {date_period[0]} - {date_period[1]}")
         ingest_raw_data(raw_data_location=paths_dict["raw_data"], date_period=etl_date, series_list=series_id_list)
     if not skip_mirror_table:
-        create_mirror_table(spark, paths_dict["raw_data"], paths_dict["processed_data"])
+        write_mirror_table(spark, paths_dict["raw_data"], paths_dict["processed_data"])
 
 
 if __name__ == '__main__':
