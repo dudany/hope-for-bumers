@@ -5,7 +5,6 @@ import pandas as pd
 import requests
 import json
 import logging
-from pyspark.sql import SparkSession
 from retrying import retry
 from pipelines.unemployment_etl.utils.unemployment_utils import set_logging
 from typing import Dict, List

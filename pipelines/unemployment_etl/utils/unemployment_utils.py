@@ -1,3 +1,4 @@
+import configparser
 import logging
 import os
 from typing import Dict
@@ -63,3 +64,11 @@ def create_pipeline_spark_context() -> SparkSession:
         .config("spark.sql.warehouse.dir", "./datalake")
 
     return configure_spark_with_delta_pip(builder).enableHiveSupport().getOrCreate()
+
+
+def get_defaults(path_to_config_file) -> tuple:
+    config = configparser.ConfigParser()
+    config.read(path_to_config_file)
+    default_dates = (config.get("DEFAULT","startyear"), config.get("DEFAULT","endyear"))
+    default_series_id = config.get("DEFAULT","seriesId")
+    return default_dates, default_series_id
