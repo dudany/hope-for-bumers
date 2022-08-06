@@ -136,3 +136,6 @@ dmypy.json
 /datalake/
 /.idea/
 /metastore_db/
+/pipelines/unemployment_etl/tests/metastore_db/
+/pipelines/unemployment_etl/tests/test_raw_data_results/
+/pipelines/unemployment_etl/tests/datalake/

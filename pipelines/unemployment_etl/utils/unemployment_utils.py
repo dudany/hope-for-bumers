@@ -27,7 +27,7 @@ def create_dir(rel_path):
         return abs_path
 
 
-def prepare_datalake(spark: SparkSession) -> Dict:
+def prepare_datalake(spark: SparkSession, mirror_sql: str) -> Dict:
     """
     Creates data lake dirs and mirror delta lake table
     :param spark: spark to run delta lake ddl
@@ -38,7 +38,7 @@ def prepare_datalake(spark: SparkSession) -> Dict:
                      "processed_data": "datalake/processed_data"}
     paths_dict = {dir: create_dir(datalake_dirs[dir]) for dir in datalake_dirs}
     # running mirror table ddl
-    with open("./pipelines/unemployment_etl/create_mirror_table/mirror_table_ddl.sql") as f:
+    with open(mirror_sql) as f:
         ddl = f.read()
     spark.sql(ddl)
 
@@ -54,14 +54,15 @@ def get_spark_session():
     return spark
 
 
-def create_pipeline_spark_context() -> SparkSession:
+def create_pipeline_spark_context(is_test: bool = False) -> SparkSession:
+    dl_path = "./test_datalake" if is_test else "./datalake"
     builder = SparkSession \
         .builder \
         .appName("hope-for-bumers-etl") \
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension") \
         .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog") \
         .config("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false") \
-        .config("spark.sql.warehouse.dir", "./datalake")
+        .config("spark.sql.warehouse.dir", dl_path)
 
     return configure_spark_with_delta_pip(builder).enableHiveSupport().getOrCreate()
 
@@ -69,6 +70,6 @@ def create_pipeline_spark_context() -> SparkSession:
 def get_defaults(path_to_config_file) -> tuple:
     config = configparser.ConfigParser()
     config.read(path_to_config_file)
-    default_dates = (config.get("DEFAULT","startyear"), config.get("DEFAULT","endyear"))
-    default_series_id = config.get("DEFAULT","seriesId")
+    default_dates = (config.get("DEFAULT", "startyear"), config.get("DEFAULT", "endyear"))
+    default_series_id = config.get("DEFAULT", "seriesId")
     return default_dates, default_series_id

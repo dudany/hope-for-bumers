@@ -25,7 +25,8 @@ def schedule_unemployment_pipeline(date_period: Tuple, series_id: str, skip_raw_
     if skip_mirror_table and skip_raw_data:
         logging.warning("Skiping raw data ingestion and mirror creating, running infra preparation only")
     spark = create_pipeline_spark_context()
-    paths_dict = prepare_datalake(spark)
+    sql_dir = "./pipelines/unemployment_etl/create_mirror_table/mirror_table_ddl.sql"
+    paths_dict = prepare_datalake(spark, sql_dir)
 
     if not skip_raw_data:
         series_id_list = series_id.split(",")
