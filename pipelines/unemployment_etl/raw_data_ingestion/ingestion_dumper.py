@@ -1,4 +1,5 @@
 import datetime
+import os
 
 import pandas as pd
 import requests
@@ -21,7 +22,7 @@ def get_data_from_api(data: str) -> str:
     return requests.post(BUREAU_OF_LABOR_STATISTICS_API_HEADER, data=data, headers=headers).text
 
 
-def ingest_raw_data(spark: SparkSession, raw_data_location: str, date_period: Dict[str, str], series_list: List[str]):
+def ingest_raw_data( raw_data_location: str, date_period: Dict[str, str], series_list: List[str]):
     """
 
     :param spark: spark session created for pipeline
@@ -37,7 +38,7 @@ def ingest_raw_data(spark: SparkSession, raw_data_location: str, date_period: Di
     total_series_df = pd.DataFrame()
     # making api call to ge data
     json_data = json.loads(get_data_from_api(data))
-    download_date = datetime.datetime.now().date().isoformat()
+    download_ts = datetime.datetime.now()
     # processing data from response
     for series in json_data['Results']['series']:
         rows_list = []
@@ -55,9 +56,14 @@ def ingest_raw_data(spark: SparkSession, raw_data_location: str, date_period: Di
         # writing to raw data location
         total_series_df = pd.concat([total_series_df, series_df])
 
-    spark_df = spark.createDataFrame(total_series_df).withColumn("received_date", download_date)
-
-    # repartition to reduce number of files and each json file per series_id
-    spark_df.repartition(len(series_list), 'series_id').write.json(raw_data_location, mode="append")
-    logging.info(f"Written files to: {raw_data_location}")
-    logging.info("Finished data ingestion")
+    total_series_df["received_date"] = download_ts.date().isoformat()
+    # write the df to json lines file
+    file_pattern = f"raw_data_{download_ts.strftime('%y_%m_%d_%H_%M_%S')}.json"
+    file_path = os.path.join(raw_data_location, file_pattern)
+    total_series_df.to_json(file_path,orient='records', lines=True)
+    # spark_df = spark.createDataFrame(total_series_df).withColumn("received_date", download_date)
+    #
+    # # repartition to reduce number of files and each json file per series_id
+    # spark_df.repartition(len(series_list), 'series_id').write.json(raw_data_location, mode="append")
+    # logging.info(f"Written files to: {raw_data_location}")
+    # logging.info("Finished data ingestion")
