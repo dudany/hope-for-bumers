@@ -22,7 +22,7 @@ pip install -r requirements.txt
 ```
 
 ## pipeline activation
-Be at the root directory of the repository, the config.ini file in each pipeline represents the deafulr ocnfig of each etl.
+Be at the root directory of the repository, the config.ini file in each pipeline represents the deaful config of each etl.
 ### 1. for default run:
    1. series id : LAUCT395688200000003,LAUCT394713800000003,LAUCT485235600000003,LAUCN271410000000003,LAUCN420410000000003
    2. startyear = 2019 
